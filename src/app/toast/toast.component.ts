@@ -24,9 +24,9 @@ export class ToastComponent implements OnInit, OnDestroy {
     this.iconType = data.type === 'success' ? 'done' : data.type;
   }
 
-  // автоматически скрываем уведомление через секунду
+  // автоматически скрываем уведомление
   ngOnInit(): void {
-    this.intervalId = setTimeout(() => (this.animationState = 'closing'), 1000);
+    this.intervalId = setTimeout(() => (this.animationState = 'closing'), 500);
   }
 
   ngOnDestroy() {

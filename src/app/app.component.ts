@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject, first } from 'rxjs';
+import { BehaviorSubject, concatMap, delay, first, from, of, skip } from 'rxjs';
 import { ToastService } from './services/toast.service';
 
 @Component({
@@ -13,6 +13,10 @@ export class AppComponent {
 
   constructor(private toastService: ToastService) { }
 
+  ngOnInit() {
+    this.getCountValue();
+  }
+
   incrementCounter(): void {
     const { value: currentCounterValue } = this.counter;
     this.counter.next(currentCounterValue + 1);
@@ -20,7 +24,6 @@ export class AppComponent {
 
   showCounter() {
     this.incrementCounter();
-    this.getCountValue();
   }
 
   showToast(value: number) {
@@ -31,8 +34,16 @@ export class AppComponent {
   }
 
   getCountValue() {
-    this.counter$.pipe(first()).subscribe((res) => {
-      this.showToast(res);
-    });
+    from(this.counter$)
+      .pipe(
+        skip(1),
+        concatMap(value => {
+          return of(value).pipe(first(), delay(1000))
+        })
+      )
+      .subscribe(res => {
+        this.showToast(res);
+        console.log(res);
+      });
   }
 }
